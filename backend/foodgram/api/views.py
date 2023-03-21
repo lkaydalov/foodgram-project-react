@@ -132,20 +132,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 ingredient_dict[name]['amount'] += amount
             else:
                 ingredient_dict[name] = {'amount': amount, 'unit': unit}
-        # файл не удается открыть!
-
-        # shopping_list = CustomPDF('static/fonts/')
-
-        # shopping_list.print_chapter(1, 'Cart', ingredient_dict)
-
-        # content = shopping_list.output(dest='S')
-
-        # response = HttpResponse(content, content_type='application/pdf')
-        # response['Content-Disposition'] = (
-        #     'attachment;',
-        #     'filename="ShoppingCart.pdf"',
-        # )
-        # return response
 
         content = '\n'.join(
             [f"{name}: {details['amount']} {details['unit']}"
