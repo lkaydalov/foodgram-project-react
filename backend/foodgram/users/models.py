@@ -31,10 +31,15 @@ class Subscription(models.Model):
     )
 
     class Meta:
-        unique_together = ('subscriber', 'target_user')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['subscriber', 'target_user'],
+                name='unique_subscriber_target_user'
+            )
+        ]
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
 
     def __str__(self):
         return (f'{self.subscriber.username}',
-                f'subscribed to {self.target_user.username}')
+                f' подписался на {self.target_user.username}')

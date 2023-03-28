@@ -1,6 +1,26 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Case, IntegerField, When
+
 from users.models import User
+
+
+class YourQuerySet(models.QuerySet):
+    """Кастомный менеджер модели,
+    который добавит дополнительные поля для фильтрации."""
+    def add_your_annotations(self, user):
+        return self.annotate(
+            is_favorited=Case(
+                When(favourited_by__user=user, then=1),
+                default=0,
+                output_field=IntegerField(),
+            ),
+            is_in_shopping_cart=Case(
+                When(added_to_cart_by__user=user, then=1),
+                default=0,
+                output_field=IntegerField(),
+            ),
+        )
 
 
 class Tags(models.Model):
@@ -62,6 +82,7 @@ class Recipes(models.Model):
         validators=[MinValueValidator(1)],
         verbose_name='Время приготовления (в минутах)',
     )
+    objects = YourQuerySet.as_manager()
 
     class Meta:
         ordering = ('-id',)
@@ -86,15 +107,16 @@ class IngredientsRecipe(models.Model):
     amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
+        validators=[MinValueValidator(1)],
         verbose_name='Количество',
     )
-
-    def __str__(self):
-        return f'{self.ingredient} - {self.amount}'
 
     class Meta:
         verbose_name = 'Ингредиент для рецепта'
         verbose_name_plural = 'Ингредиенты для рецептов'
+
+    def __str__(self):
+        return f'{self.ingredient} - {self.amount}'
 
 
 class FavouriteRecipe(models.Model):
@@ -110,15 +132,11 @@ class FavouriteRecipe(models.Model):
     )
 
     class Meta:
-        unique_together = ('user', 'recipe')
-        verbose_name = 'Избранный рецепты'
+        verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
 
     def __str__(self):
-        return (
-            'FavouriteRecipe object',
-            f'(user: {self.user}, recipe: {self.recipe})',
-            )
+        return f'{self.user} добавил в избранное {self.recipe}'
 
 
 class ShoppingCartRecipe(models.Model):
@@ -134,6 +152,8 @@ class ShoppingCartRecipe(models.Model):
     )
 
     class Meta:
-        unique_together = ('user', 'recipe')
         verbose_name = 'Рецепт в корзине покупок'
         verbose_name_plural = 'Рецепты в корзине покупок'
+
+    def __str__(self):
+        return f'{self.user} добавил в корзину {self.recipe}'

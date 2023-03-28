@@ -10,6 +10,4 @@ router.register(r'tags', TagsViewSet, basename='tags')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('', include('users.urls')),
-    path(r'', include('djoser.urls')),
 ]
