@@ -65,7 +65,10 @@ class Recipes(models.Model):
         max_length=200,
         verbose_name='Название',
     )
-    image = models.ImageField(upload_to='recipes/images')
+    image = models.ImageField(
+        upload_to='recipes/images',
+        verbose_name='Изображение',
+    )
     text = models.TextField(
         verbose_name='Описание',
     )
@@ -134,6 +137,12 @@ class FavouriteRecipe(models.Model):
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe'
+            )
+        ]
 
     def __str__(self):
         return f'{self.user} добавил в избранное {self.recipe}'
@@ -154,6 +163,12 @@ class ShoppingCartRecipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт в корзине покупок'
         verbose_name_plural = 'Рецепты в корзине покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe'
+            )
+        ]
 
     def __str__(self):
         return f'{self.user} добавил в корзину {self.recipe}'

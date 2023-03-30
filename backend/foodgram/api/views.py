@@ -1,4 +1,3 @@
-
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -34,10 +33,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = RecipeSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            recipe = serializer.save(author=self.request.user)
+            serializer.save(author=self.request.user)
 
             return Response(
-                RecipeListSerializer(recipe).data,
+                serializer.data,
                 status=status.HTTP_201_CREATED,
             )
 
@@ -53,23 +52,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             partial=True
         )
         if serializer.is_valid(raise_exception=True):
-            recipe = serializer.save()
+            serializer.save()
 
             return Response(
-                RecipeListSerializer(recipe).data,
+                serializer.data,
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
-
-    def get_serializer_context(self):
-        """Используем теги и ингридиенты, уже находящиеся в БД
-        для создания рецепта"""
-        context = super().get_serializer_context()
-        context['ingredients'] = Ingredients.objects.all()
-        context['tags'] = Tags.objects.all()
-
-        return context
 
     def get_serializer_class(self):
         if self.action in ('create', 'update', 'partial_update'):
@@ -84,25 +74,35 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user
 
         if request.method == 'POST':
+            data = {'user': user.id, 'recipe': recipe.id}
             serializer = FavoriteSerializer(context={
                 'recipe': recipe,
                 'request': request
             },
-                 data=request.data)
+                 data=data)
             if serializer.is_valid():
-                favorite = serializer.save()
+                serializer.save()
 
                 return Response(
-                    FavoriteSerializer(favorite).data,
+                    serializer.data,
                     status=status.HTTP_201_CREATED
                 )
+
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             favorite = FavouriteRecipe.objects.get(
                     user=user.id, recipe=recipe.id
                 )
             favorite.delete()
 
-            return Response({'message': 'Удалено из избранного'})
+            return Response(
+                {'message': 'Удалено из избранного'},
+                status=status.HTTP_204_NO_CONTENT
+            )
         except FavouriteRecipe.DoesNotExist:
 
             return Response(
@@ -114,22 +114,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         recipe = self.get_object()
         user = request.user
-
+        data = {'user': user.id, 'recipe': recipe.id}
         if request.method == 'POST':
             serializer = ShoppingCartSerializer(context={
                 'recipe': recipe,
                 'request': request,
-            }, data=request.data)
+            }, data=data)
             if serializer.is_valid():
-                shopping = serializer.save()
+                serializer.save()
 
                 return Response(
-                    ShoppingCartSerializer(shopping).data,
+                    serializer.data,
                     status=status.HTTP_201_CREATED,
                 )
 
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             shopping_cart = get_object_or_404(
@@ -202,6 +204,7 @@ class ChangePasswordView(views.APIView):
         )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+
             return Response(
                 {"detail": "Пароль успешно изменён, поздравляем."},
                 status=status.HTTP_201_CREATED,
@@ -238,10 +241,10 @@ class UserDetailView(viewsets.ModelViewSet):
                 'request': request,
             }, data=request.data)
             if serializer.is_valid():
-                subscription_object = serializer.save()
+                serializer.save()
 
                 return Response(
-                    UserSubscribeSerializer(subscription_object).data,
+                    serializer.data,
                     status=status.HTTP_201_CREATED
                 )
 

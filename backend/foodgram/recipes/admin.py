@@ -9,12 +9,20 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('email', 'username',)
 
 
+class IngredientsRecipeInline(admin.TabularInline):
+    model = IngredientsRecipe
+    extra = 1
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'favorite_count')
     list_filter = ('name', 'author', 'tags',)
+    readonly_fields = ('favorite_count',)
+    inlines = (IngredientsRecipeInline,)
 
     def favorite_count(self, obj):
         return obj.favourited_by.count()
+    favorite_count.short_description = "Число добавлений в избранное"
 
 
 class IngridientAdmin(admin.ModelAdmin):
