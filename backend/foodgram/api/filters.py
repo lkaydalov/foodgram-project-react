@@ -18,6 +18,9 @@ class CustomQueryFilter(filters.FilterSet):
             'is_in_shopping_cart'
         )
         tags = self.request.query_params.getlist('tags')
+        author_param = self.request.query_params.get('author')
+        if author_param:
+            queryset = queryset.filter(author__id=author_param)
         if is_favorited:
             queryset = queryset.filter(favourited_by__user=self.request.user)
         if is_in_shopping_cart:

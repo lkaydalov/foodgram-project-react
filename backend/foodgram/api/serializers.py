@@ -290,7 +290,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 class UserListSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
-    recipes = RecipeListSerializer(many=True, required=False)
     id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),
     )
@@ -305,7 +304,6 @@ class UserListSerializer(serializers.ModelSerializer):
             'last_name',
             'password',
             'is_subscribed',
-            'recipes',
         )
         extra_kwargs = {'password': {'write_only': 'True'}}
 
