@@ -78,8 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = FavoriteSerializer(context={
                 'recipe': recipe,
                 'request': request
-            },
-                 data=data)
+            }, data=data)
             if serializer.is_valid():
                 serializer.save()
 
@@ -95,8 +94,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         try:
             favorite = FavouriteRecipe.objects.get(
-                    user=user.id, recipe=recipe.id
-                )
+                user=user.id, recipe=recipe.id,
+            )
             favorite.delete()
 
             return Response(

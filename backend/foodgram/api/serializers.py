@@ -384,23 +384,25 @@ class UserSubscribeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='target_user.id')
     email = serializers.EmailField(
         source='target_user.email',
-        required=False
+        required=False,
     )
     username = serializers.CharField(
         source='target_user.username',
-        required=False
+        required=False,
     )
     first_name = serializers.CharField(
         source='target_user.first_name',
-        required=False)
+        required=False,
+    )
     last_name = serializers.CharField(
         source='target_user.last_name',
         required=False,
-        )
+    )
     recipes = RecipeListSerializer(
         source='target_user.recipes',
         many=True,
-        read_only=True)
+        read_only=True,
+    )
     recipes_count = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
