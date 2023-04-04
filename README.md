@@ -1,4 +1,5 @@
-![foodgram-project-react workflow](https://github.com/lkaydalov/foodgram-project-react/actions/workflows/foodgram_workflow/badge.svg)
+![foodgram-project-react workflow](https://github.com/lkaydalov/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
+
 
 ## Ссылка на развернутый проект
 ```
