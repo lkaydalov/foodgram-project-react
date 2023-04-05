@@ -172,7 +172,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         filename = 'shopping_list.pdf'
         shopping_list.output(filename)
 
-        with open(filename) as pdf_file:
+        with open(filename, 'rb') as pdf_file:
             response = HttpResponse(
                 pdf_file.read(),
                 content_type='application/pdf'
