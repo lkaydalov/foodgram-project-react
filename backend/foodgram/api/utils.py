@@ -5,10 +5,14 @@ class CustomPDF(FPDF):
 
     def __init__(self):
         super().__init__()
-        self.add_font('DejaVu', '', 'static/fonts/DejaVuSansCondensed.ttf')
+        self.add_font(
+            'DejaVu',
+            '',
+            'project_static/fonts/DejaVuSansCondensed.ttf'
+        )
 
     def header(self):
-        self.image('static/logo192.png', self.w / 2 - 16, 8, 33)
+        self.image('project_static/logo192.png', self.w / 2 - 16, 8, 33)
         self.set_font('DejaVu', '', 14)
         self.ln(40)
         self.cell(0, 10, 'Cписок покупок', 0, 0, 'C')
