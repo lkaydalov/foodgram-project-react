@@ -1,3 +1,5 @@
+import os
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -15,6 +17,7 @@ from .serializers import (ChangePasswordSerializer, FavoriteSerializer,
                           RecipeSerializer, ShoppingCartSerializer,
                           TagSerializer, UserListSerializer, UserSerializer,
                           UserSubscribeListSerializer, UserSubscribeSerializer)
+from .utils import CustomPDF
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -164,15 +167,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
             else:
                 ingredient_dict[name] = {'amount': amount, 'unit': unit}
 
-        content = '\n'.join(
-            [f"{name}: {details['amount']} {details['unit']}"
-             for name, details in ingredient_dict.items()]
-        )
-        response = HttpResponse(content, content_type='text/plain')
-        response['Content-Disposition'] = (
-            'attachment;'
-            'filename="ShoppingCart.txt"'
-        )
+        shopping_list = CustomPDF()
+        shopping_list.print_chapter(ingredient_dict)
+        filename = 'shopping_list.pdf'
+        shopping_list.output(filename)
+
+        with open(filename) as pdf_file:
+            response = HttpResponse(
+                pdf_file.read(),
+                content_type='application/pdf'
+            )
+            response['Content-Disposition'] = (
+                'attachment;',
+                'filename="{}"'.format(filename),
+            )
+            os.remove(filename)
 
         return response
 
