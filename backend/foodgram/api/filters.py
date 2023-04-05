@@ -22,13 +22,13 @@ class CustomQueryFilter(filters.FilterSet):
             if author_param:
                 queryset = queryset.filter(author__id=author_param)
             if is_favorited:
-                queryset = queryset.add_your_annotations(
-                    self.request.user
-                ).filter(is_favorited=1)
+                queryset = queryset.filter(
+                    favourited_by__user=self.request.user
+                )
             if is_in_shopping_cart:
-                queryset = queryset.add_your_annotations(
-                    self.request.user
-                ).filter(is_in_shopping_cart=1)
+                queryset = queryset.filter(
+                    added_to_cart_by__user=self.request.user
+                )
             if tags:
 
                 return queryset.filter(tags__slug__in=tags).distinct()

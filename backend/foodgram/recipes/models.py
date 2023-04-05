@@ -1,26 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Case, IntegerField, When
 
 from users.models import User
-
-
-class YourQuerySet(models.QuerySet):
-    """Кастомный менеджер модели,
-    который добавит дополнительные поля для фильтрации."""
-    def add_your_annotations(self, user):
-        return self.annotate(
-            is_favorited=Case(
-                When(favourited_by__user=user, then=1),
-                default=0,
-                output_field=IntegerField(),
-            ),
-            is_in_shopping_cart=Case(
-                When(added_to_cart_by__user=user, then=1),
-                default=0,
-                output_field=IntegerField(),
-            ),
-        )
 
 
 class Tags(models.Model):
@@ -85,7 +66,6 @@ class Recipes(models.Model):
         validators=[MinValueValidator(1)],
         verbose_name='Время приготовления (в минутах)',
     )
-    objects = YourQuerySet.as_manager()
 
     class Meta:
         ordering = ('-id',)
