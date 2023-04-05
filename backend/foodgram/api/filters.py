@@ -33,6 +33,7 @@ class CustomQueryFilter(filters.FilterSet):
 
                 return queryset.filter(tags__slug__in=tags).distinct()
         tags = self.request.query_params.getlist('tags')
+
         if tags:
 
             return queryset.filter(tags__slug__in=tags).distinct()
