@@ -178,8 +178,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 content_type='application/pdf'
             )
             response['Content-Disposition'] = (
-                'attachment;',
-                'filename="{}"'.format(filename),
+                'attachment; '
+                'filename="{}"'.format(filename)
             )
             os.remove(filename)
 

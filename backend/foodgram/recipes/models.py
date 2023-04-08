@@ -66,6 +66,10 @@ class Recipes(models.Model):
         validators=[MinValueValidator(1)],
         verbose_name='Время приготовления (в минутах)',
     )
+    pub_date = models.DateTimeField(
+        null=True,
+        verbose_name='Дата публикации',
+    )
 
     class Meta:
         ordering = ('-id',)
